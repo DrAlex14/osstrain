@@ -1,8 +1,10 @@
-package com.bosssoft.osstrain.service;
+package com.bosssoft.osstrain.service.serviceimpl;
 
 import com.aliyun.oss.OSS;
 import com.bosssoft.osstrain.config.AliyunConfig;
+import com.bosssoft.osstrain.service.PicUploadService;
 import com.bosssoft.osstrain.vo.PicUploadResult;
+import lombok.extern.log4j.Log4j2;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,10 +15,8 @@ import java.io.IOException;
 
 
 @Service
-public class PicUploadServiceIpml implements PicUploadService{
-
-    @Autowired
-    private OSS ossClient;
+@Log4j2
+public class PicUploadServiceIpml implements PicUploadService {
 
     @Autowired
     private AliyunConfig aliyunConfig;
@@ -29,6 +29,9 @@ public class PicUploadServiceIpml implements PicUploadService{
 
     @Override
     public PicUploadResult upload(MultipartFile multipartFile){
+        log.info(Thread.currentThread().getName());
+
+        OSS ossClient = aliyunConfig.getOssClient();
 
         PicUploadResult uploadResult = new PicUploadResult();
 
@@ -58,7 +61,7 @@ public class PicUploadServiceIpml implements PicUploadService{
          * 上传阿里云
          */
         try {
-            this.ossClient.putObject(this.aliyunConfig.getBucketName(),filePath,new ByteArrayInputStream(multipartFile.getBytes()));
+            ossClient.putObject(this.aliyunConfig.getBucketName(),filePath,new ByteArrayInputStream(multipartFile.getBytes()));
         } catch (IOException e) {
             e.printStackTrace();
             uploadResult.setStatus("error");
